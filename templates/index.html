@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Chatbot</title>
+    <style>
+        #chatbox {
+            width: 300px;
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #input {
+            width: 300px;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Customer Support Chatbot</h2>
+    <div id="chatbox" role="log" aria-live="polite"></div>
+    <label for="input" class="visually-hidden">Type your message</label>
+    <input type="text" id="input" placeholder="Type your message...">
+    <button id="sendButton">Send</button>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const input = document.getElementById("input");
+        const sendButton = document.getElementById("sendButton");
+
+        function appendMessage(sender, message) {
+            const p = document.createElement("p");
+            p.innerHTML = `<b>${sender}:</b> ${message}`; // Sanitize if needed
+            chatbox.appendChild(p);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = input.value.trim();
+            if (!message) return;
+
+            appendMessage("You", message);
+            input.value = "";
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+                if (!response.ok) throw new Error("Network response was not ok");
+                const data = await response.json();
+                appendMessage("Bot", data.response || "No response from bot");
+            } catch (error) {
+                appendMessage("Bot", "Error: Could not connect to the server");
+                console.error("Fetch error:", error);
+            }
+        }
+
+        sendButton.addEventListener("click", sendMessage);
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>

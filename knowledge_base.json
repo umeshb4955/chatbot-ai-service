@@ -1,0 +1,7 @@
+{
+  "questions": {
+    "is product in stock": "Please specify the product name, and I’ll check availability!",
+    "return policy": "You can return products within 30 days of purchase with a receipt.",
+    "shipping time": "Standard shipping takes 3-5 business days."
+  }
+}
